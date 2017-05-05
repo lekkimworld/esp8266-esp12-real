@@ -2,9 +2,14 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <WiFiUDP.h>
 
 const char* ssid = "MM";
 const char* password = "chippo-lekkim";
+const char* deviceName = "tryk1";
+
+const unsigned int portMulti = 2311;
+const unsigned int localPort = 2311;
 
 const int button1 = 2;
 const int button2 = 0;
@@ -16,6 +21,8 @@ const int led1 = 15;
 const int led2 = 4;
 const int led3 = 5;
 
+WiFiUDP Udp;
+IPAddress ipMulti(239, 9, 11, 212);
 ESP8266WebServer server(80);  
 
 void setup() {
@@ -30,10 +37,32 @@ void setup() {
 
   // start server
   initServer();
+
+  // begin multicast
+  initMulticast();
 }
 
 void loop() {
   server.handleClient();
+
+  while (digitalRead(button1) == LOW) {
+    sendButtonPress("1");
+  }
+  while (digitalRead(button2) == LOW) {
+    sendButtonPress("2");
+  }
+  while (digitalRead(button3) == LOW) {
+    sendButtonPress("3");
+  }
+  while (digitalRead(button4) == LOW) {
+    sendButtonPress("4");
+  }
+  while (digitalRead(button5) == LOW) {
+    sendButtonPress("5");
+  }
+  while (digitalRead(button6) == LOW) {
+    sendButtonPress("6");
+  }
 }
 
 void initializePins() {
@@ -152,3 +181,18 @@ void initServer() {
   // start server
   server.begin();
 }
+
+void initMulticast() {
+  Udp.begin(localPort);
+}
+void sendButtonPress(char* button) {
+  Udp.beginPacketMulticast(ipMulti, portMulti, WiFi.localIP());
+  Udp.write("Device: ");
+  Udp.write(deviceName);
+  Udp.write(", button <");
+  Udp.write(button);
+  Udp.write(">");
+  Udp.endPacket();
+  delay(200);
+}
+
