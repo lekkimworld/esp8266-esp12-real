@@ -4,8 +4,8 @@
 #include <ESP8266mDNS.h>
 #include <WiFiUDP.h>
 
-const char* ssid = "MM";
-const char* password = "chippo-lekkim";
+const char* ssid = "";
+const char* password = "";
 const char* deviceName = "tryk1";
 
 const unsigned int portMulti = 2311;
